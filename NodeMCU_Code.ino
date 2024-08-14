@@ -17,12 +17,14 @@ const char* serverName = "http://your_server_ip/handle_rfid.php";
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600 * 1); // CET is UTC+1
 
-void setup() {
+void setup() 
+{
     Serial.begin(BAUD_RATE); // Initialize Serial for communication with Mega 2560
     WiFi.begin(ssid, password); // Connect to Wi-Fi
 
     // Wait for the Wi-Fi to connect
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED) 
+    {
         delay(1000);
         Serial.println("Connecting to Wi-Fi...");
     }
@@ -32,25 +34,30 @@ void setup() {
     timeClient.begin();
 }
 
-void loop() {
+void loop() 
+{
     timeClient.update();
     int currentHour = timeClient.getHours();
     int currentMinute = timeClient.getMinutes();
 
     // Auto-logout at 16:00 CET
-    if (currentHour == 16 && currentMinute == 0) {
+    if (currentHour == 16 && currentMinute == 0) 
+    {
         autoLogout();
         delay(60000); // Wait for a minute to avoid multiple logout requests
     }
 
-    if (Serial.available()) {
+    if (Serial.available()) 
+    {
         // Read RFID data from Mega 2560
         String rfidTag = Serial.readStringUntil('\n');
         rfidTag.trim(); // Remove any whitespace/newline characters
 
-        if (rfidTag.length() > 0) {
+        if (rfidTag.length() > 0) 
+        {
             // Send RFID data to the server
-            if (WiFi.status() == WL_CONNECTED) {
+            if (WiFi.status() == WL_CONNECTED) 
+            {
                 HTTPClient http;
                 http.begin(serverName);
                 http.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -66,15 +73,19 @@ void loop() {
                 }
 
                 http.end(); // Close the connection
-            } else {
+            } 
+            else 
+            {
                 Serial.println("Wi-Fi not connected");
             }
         }
     }
 }
 
-void autoLogout() {
-    if (WiFi.status() == WL_CONNECTED) {
+void autoLogout() 
+{
+    if (WiFi.status() == WL_CONNECTED) 
+    {
         HTTPClient http;
         http.begin(serverName);
         http.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -82,15 +93,20 @@ void autoLogout() {
         String httpRequestData = "auto_logout=true";
         int httpResponseCode = http.POST(httpRequestData);
 
-        if (httpResponseCode > 0) {
+        if (httpResponseCode > 0) 
+        {
             String response = http.getString();
             Serial.println("Auto-logout Response: " + response);
-        } else {
+        } 
+        else 
+        {
             Serial.println("Error sending auto-logout POST request");
         }
 
         http.end(); // Close the connection
-    } else {
+    } 
+    else 
+    {
         Serial.println("Wi-Fi not connected for auto-logout");
     }
 }
