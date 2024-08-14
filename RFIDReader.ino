@@ -4,39 +4,45 @@
 #define SS_PIN 10
 #define RST_PIN 9
 
-class RFIDManager {
-public:
-    void begin() {
+class RFIDManager 
+{
+    public:
+    void begin() 
+    {
         SPI.begin();
         rfid.PCD_Init();
     }
 
-    String readRFID() {
+    String readRFID() 
+    {
         if (!rfid.PICC_IsNewCardPresent()) return "";
         if (!rfid.PICC_ReadCardSerial()) return "";
 
         String rfidTag = "";
-        for (byte i = 0; i < rfid.uid.size; i++) {
+        for (byte i = 0; i < rfid.uid.size; i++) 
+        {
             rfidTag += String(rfid.uid.uidByte[i], HEX);
         }
         rfid.PICC_HaltA();
         return rfidTag;
     }
-
-private:
+    private:
     MFRC522 rfid = MFRC522(SS_PIN, RST_PIN);
 };
 
 RFIDManager rfidManager;
 
-void setup() {
+void setup() 
+{
     Serial.begin(9600); // Initialize Serial communication with NodeMCU
     rfidManager.begin();
 }
 
-void loop() {
+void loop()
+{
     String rfidTag = rfidManager.readRFID();
-    if (rfidTag != "") {
+    if (rfidTag != "")
+    {
         Serial.println(rfidTag); // Send RFID tag to NodeMCU via Serial
         delay(2000);
     }
