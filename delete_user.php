@@ -1,34 +1,43 @@
 <?php
-class Database {
+
+class Database 
+{
     private $host = 'localhost';
     private $db_name = 'rfid_system';
     private $username = 'root';
     private $password = '';
     public $conn;
 
-    public function getConnection() {
+    public function getConnection() 
+    {
         $this->conn = null;
-        try {
+        try 
+        {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->exec("set names utf8");
-        } catch(PDOException $exception) {
+        } 
+        catch(PDOException $exception) 
+        {
             echo "Connection error: " . $exception->getMessage();
         }
         return $this->conn;
     }
 }
 
-class User {
+class User 
+{
     private $conn;
     private $table_name = "users";
 
     public $id;
 
-    public function __construct($db) {
+    public function __construct($db) 
+    {
         $this->conn = $db;
     }
 
-    public function delete() {
+    public function delete() 
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
 
@@ -36,14 +45,16 @@ class User {
 
         $stmt->bindParam(':id', $this->id);
 
-        if ($stmt->execute()) {
+        if ($stmt->execute())
+        {
             return true;
         }
         return false;
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
     $database = new Database();
     $db = $database->getConnection();
 
@@ -51,12 +62,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $user->id = $_POST['id'];
 
-    if ($user->delete()) {
+    if ($user->delete()) 
+    {
         echo json_encode(array("message" => "User was deleted."));
-    } else {
+    } 
+    else 
+    {
         echo json_encode(array("message" => "Unable to delete user."));
     }
-} else {
+} 
+else 
+{
     echo json_encode(array("message" => "Invalid request method."));
 }
+
 ?>
