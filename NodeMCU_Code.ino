@@ -4,11 +4,11 @@
 #include <WiFiUdp.h>
 
 // Wi-Fi credentials
-const char* ssid = "your_SSID";
-const char* password = "your_PASSWORD";
+const char* ssid = "Luftuberwachungssystem";
+const char* password = "Ux957Zi%xqbY6vPHCm#4X";
 
 // Server URL
-const char* serverName = "http://your_server_ip/handle_rfid.php";
+const char* serverName = "http://your_server_ip/handle_rfid.php"; 
 
 // Baud rate for serial communication with Mega 2560
 #define BAUD_RATE 9600
@@ -16,6 +16,8 @@ const char* serverName = "http://your_server_ip/handle_rfid.php";
 // NTP Client to get time
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600 * 1); // CET is UTC+1
+
+WiFiClient wifiClient;
 
 void setup() 
 {
@@ -59,7 +61,7 @@ void loop()
             if (WiFi.status() == WL_CONNECTED) 
             {
                 HTTPClient http;
-                http.begin(serverName);
+                http.begin(wifiClient, serverName);
                 http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
                 String httpRequestData = "rfid=" + rfidTag;
@@ -87,7 +89,7 @@ void autoLogout()
     if (WiFi.status() == WL_CONNECTED) 
     {
         HTTPClient http;
-        http.begin(serverName);
+        http.begin(wifiClient, serverName);
         http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
         String httpRequestData = "auto_logout=true";
