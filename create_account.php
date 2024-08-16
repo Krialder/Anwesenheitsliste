@@ -1,24 +1,31 @@
 <?php
-class Database {
-    private $host = 'localhost';
-    private $db_name = 'rfid_system';
-    private $username = 'root';
-    private $password = '';
+
+class Database 
+{
+    private $host = '192.168.2.150';
+    private $db_name = 'kde_test2';
+    private $username = 'kde';
+    private $password = 'kde';
     public $conn;
 
-    public function getConnection() {
+    public function getConnection() 
+    {
         $this->conn = null;
-        try {
+        try 
+        {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->exec("set names utf8");
-        } catch(PDOException $exception) {
+        } 
+        catch(PDOException $exception) 
+        {
             echo "Connection error: " . $exception->getMessage();
         }
         return $this->conn;
     }
 }
 
-class User {
+class User 
+{
     private $conn;
     private $table_name = "users";
 
@@ -26,11 +33,13 @@ class User {
     public $name;
     public $classification_id;
 
-    public function __construct($db) {
+    public function __construct($db) 
+    {
         $this->conn = $db;
     }
 
-    public function create() {
+    public function create() 
+    {
         $query = "INSERT INTO " . $this->table_name . " (rfid, name, classification_id) VALUES (:rfid, :name, :classification_id)";
         $stmt = $this->conn->prepare($query);
 
@@ -42,14 +51,16 @@ class User {
         $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':classification_id', $this->classification_id);
 
-        if ($stmt->execute()) {
+        if ($stmt->execute()) 
+        {
             return true;
         }
         return false;
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
     $database = new Database();
     $db = $database->getConnection();
 
@@ -59,12 +70,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user->name = $_POST['name'];
     $user->classification_id = $_POST['classification_id'];
 
-    if ($user->create()) {
+    if ($user->create()) 
+    {
         echo json_encode(array("message" => "User was created."));
-    } else {
+    } 
+    else 
+    {
         echo json_encode(array("message" => "Unable to create user."));
     }
-} else {
+} 
+else 
+{
     echo json_encode(array("message" => "Invalid request method."));
 }
+
 ?>
