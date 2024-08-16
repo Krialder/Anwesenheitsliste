@@ -7,11 +7,8 @@
 const char* ssid = "Luftuberwachungssystem";
 const char* password = "Ux957Zi%xqbY6vPHCm#4X";
 
-// Server connection string
-const char* serverConnectionString = "Server=192.168.2.150;database=kde_test;User ID=kde;Password=kde";
-
 // Server URL
-const char* serverName = "http://192.168.2.150/handle_rfid.php"; 
+const char* serverName = "http://your_server_ip/handle_rfid.php";
 
 // Baud rate for serial communication with Mega 2560
 #define BAUD_RATE 9600
