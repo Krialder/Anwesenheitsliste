@@ -11,11 +11,11 @@ CREATE TABLE IF NOT EXISTS users
     classification_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (classification_id) REFERENCES classifications(id)
+    FOREIGN KEY (classification_id) REFERENCES categorization(id)
 );
 
--- Classifications Table
-CREATE TABLE IF NOT EXISTS classifications 
+-- categorization Table
+CREATE TABLE IF NOT EXISTS categorization 
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
@@ -37,16 +37,16 @@ CREATE TABLE IF NOT EXISTS logs
 CREATE INDEX idx_users_rfid ON users(rfid);
 CREATE INDEX idx_logs_rfid ON logs(rfid);
 
--- Insert sample data into classifications
-INSERT INTO classifications (name) VALUES
+-- Insert sample data into categorization
+INSERT INTO categorization (name) VALUES
 ('BVB'),
 ('Auszubildende'),
 ('Ausbilder'),
 ('Admin');
 
 -- Insert sample data into users
-INSERT INTO users (rfid, name, classification_id) VALUES
-('1234abcd', 'John Doe', (SELECT id FROM classifications WHERE name = 'BVB')),
-('5678efgh', 'Jane Doe', (SELECT id FROM classifications WHERE name = 'Auszubildende')),
-('9101ijkl', 'Max Mustermann', (SELECT id FROM classifications WHERE name = 'Ausbilder')),
-('1213mnop', 'Erika Mustermann', (SELECT id FROM classifications WHERE name = 'Admin'));
+INSERT INTO users (rfid, name, categorization) VALUES
+('1234abcd', 'John Doe', (SELECT id FROM categorization WHERE name = 'BVB')),
+('5678efgh', 'Jane Doe', (SELECT id FROM categorization WHERE name = 'Auszubildende')),
+('9101ijkl', 'Max Mustermann', (SELECT id FROM categorization WHERE name = 'Ausbilder')),
+('1213mnop', 'Erika Mustermann', (SELECT id FROM categorization WHERE name = 'Admin'));
