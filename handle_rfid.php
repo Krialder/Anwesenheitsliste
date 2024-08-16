@@ -2,10 +2,10 @@
 
 class Database 
 {
-    private $host = "localhost";
-    private $username = "root";
-    private $password = "";
-    private $dbname = "rfid_system";
+    private $host = "192.168.2.150";
+    private $dbname = "kde_test2";
+    private $username = "kde";
+    private $password = "kde";
     private $conn;
 
     public function connect() 
