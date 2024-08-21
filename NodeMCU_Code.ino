@@ -7,11 +7,8 @@
 const char* ssid = "Luftuberwachungssystem";
 const char* password = "Ux957Zi%xqbY6vPHCm#4X";
 
-// Server connection string
-const char* serverConnectionString = "Server=192.168.2.150;database=kde_test2;User ID=kde;Password=kde";
-
 // Server URL
-const char* serverName = "http://192.168.2.150/handle_rfid.php"; 
+const char* serverName = "http://192.168.2.150"; 
 
 // Baud rate for serial communication with Mega 2560
 #define BAUD_RATE 9600
@@ -28,12 +25,32 @@ void setup()
     WiFi.begin(ssid, password); // Connect to Wi-Fi
 
     // Wait for the Wi-Fi to connect
-    while (WiFi.status() != WL_CONNECTED) 
+    int attempts = 0;
+    while (WiFi.waitForConnectResult() != WL_CONNECTED && attempts < 20) 
     {
-        delay(1000);
-        Serial.println("Connecting to Wi-Fi...");
+        delay(2000);
+        Serial.print("Connecting to Wi-Fi...");
+        Serial.print("Attempt: ");
+        Serial.println(attempts + 1);
+        Serial.println("Wi-Fi Status: ");
+        Serial.println(WiFi.status()); //printing Wi-Fi status
+        Serial.println(getWiFiStatusMeaning(WiFi.status())); //Print Wi-Fi status meaning
+        attempts++;
     }
-    Serial.println("Connected to Wi-Fi");
+
+    if (WiFi.status() == WL_CONNECTED) 
+    {
+        Serial.println("Connected to Wi-Fi");
+        long rssi = WiFi.RSSI();
+        Serial.print("Signal strength (RSSI): ");
+        Serial.print(rssi);
+        Serial.println(" dBm");
+    } 
+    else 
+    {
+        Serial.println("Failed to connect to Wi-Fi");
+    }
+    
 
     // Initialize NTP Client
     timeClient.begin();
@@ -66,15 +83,18 @@ void loop()
                 HTTPClient http;
                 http.begin(wifiClient, serverName);
                 http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
+              //Nicht gesperrt!!! Fatal
                 String httpRequestData = "rfid=" + rfidTag;
                 int httpResponseCode = http.POST(httpRequestData);
 
-                if (httpResponseCode > 0) {
+                if (httpResponseCode > 0) 
+                {
                     String response = http.getString();
                     Serial.println("Server Response: " + response);
-                } else {
-                    Serial.println("Error sending POST request");
+                } 
+                else 
+                {
+                  Serial.println("Error sending POST request");
                 }
 
                 http.end(); // Close the connection
@@ -105,7 +125,7 @@ void autoLogout()
         } 
         else 
         {
-            Serial.println("Error sending auto-logout POST request");
+          Serial.println("Error sending auto-logout POST request");
         }
 
         http.end(); // Close the connection
@@ -113,5 +133,28 @@ void autoLogout()
     else 
     {
         Serial.println("Wi-Fi not connected for auto-logout");
+    }
+}
+
+String getWiFiStatusMeaning(int status) 
+{
+    switch (status) 
+    {
+        case WL_IDLE_STATUS:
+            return "Idle";
+        case WL_NO_SSID_AVAIL:
+            return "No SSID Available";
+        case WL_SCAN_COMPLETED:
+            return "Scan Completed";
+        case WL_CONNECTED:
+            return "Connected";
+        case WL_CONNECT_FAILED:
+            return "Connect Failed";
+        case WL_CONNECTION_LOST:
+            return "Connection Lost";
+        case WL_DISCONNECTED:
+            return "Disconnected";
+        default:
+            return "Unknown Status";
     }
 }
